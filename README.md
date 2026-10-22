@@ -51,6 +51,16 @@
 (curl -LfsS https://raw.githubusercontent.com/0xdabiaoge/singbox-lite/main/singbox.sh -o /usr/local/bin/sb || wget -q https://raw.githubusercontent.com/0xdabiaoge/singbox-lite/main/singbox.sh -O /usr/local/bin/sb) && chmod +x /usr/local/bin/sb && sb
 ```
 
+### 修复版安装源（本 fork）
+
+本 fork 在上游合并前包含以下修复（详见 [PR #18](https://github.com/0xdabiaoge/singbox-lite/pull/18)：Argo 元数据 TSV 字段错位 #16、Alpine 容器 cron 启动失败）。如需立即使用修复版：
+
+```bash
+(curl -LfsS https://raw.githubusercontent.com/guanxi660-crypto/singbox-lite/fix/argo-metadata-tsv-and-alpine-cron/singbox.sh -o /usr/local/bin/sb || wget -q https://raw.githubusercontent.com/guanxi660-crypto/singbox-lite/fix/argo-metadata-tsv-and-alpine-cron/singbox.sh -O /usr/local/bin/sb) && chmod +x /usr/local/bin/sb && sb
+```
+
+> 上游合并后请换回官方安装源；已安装本版的用户可通过脚本菜单 `[13]` 正常更新（子脚本仍从上游主仓库下载，`singbox.sh` 本体以本分支为准）。
+
 以后直接运行：
 
 ```bash
