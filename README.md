@@ -185,6 +185,8 @@ VLESS 导入结果都会显式写入 `network: "tcp"`。Reality 模式严格检�
 4. 选择本机中转入口协议。
 5. 脚本创建入口、落地 outbound、路由、分享链接和客户端配置。
 
+创建中转入口时可以填写客户端实际连接的 IP 或域名；回车使用自动探测的公网 IP。该地址同时写入分享链接和 Clash/Mihomo 配置，不改变第三方落地节点地址或本机监听地址。NAT 若映射了不同的外部端口，还需按实际端口调整客户端配置并确认端口映射可达。
+
 可选中转入口：
 
 - VLESS + TCP + Reality + Vision
@@ -411,3 +413,14 @@ Xray 与 sing-box 使用独立的服务和 JSON 配置，但共享 `/usr/local/e
 - sing-box 与 Xray 的 Shadowsocks 创建菜单统一补齐 `aes-128-gcm`、`aes-256-gcm`、`chacha20-ietf-poly1305`、`xchacha20-ietf-poly1305` 和三种 SS2022 加密方式，并保留原有 Padding、ShadowTLS 组合。
 - SS2022 改为按算法生成严格长度的 Base64 密钥：AES-128 使用 16 字节，AES-256 与 ChaCha20 使用 32 字节；sing-box 批量创建同步支持七种纯 SS 加密方式。
 - sing-box `[5] 修改节点` 在重新生成 Shadowsocks 认证信息时复用相同的密钥规则，并同步更新服务端配置、元数据、分享链接与 Clash/Mihomo 配置。
+
+### 2026.10.22
+
+- PR #18 修复 Argo 节点预览在进入子菜单后分享链接被污染的问题：`_sync_argo_early_data()` 改为逐条紧凑 JSON 读取，避免 VLESS 的空 `password` 字段使后续字段错位；异常 `path` 不再参与链接重生成。旧逻辑持久化的是错误的 `share_link`，元数据 `path` 通常仍保留原值。
+- PR #18 为 Alpine 容器中不可用的 OpenRC cron 服务加入直接启动 `crond` 的回退路径。
+
+### 2026.10.24
+
+- 中转入口新增客户端连接地址选择，支持 IPv4、IPv6 和域名；解决出口 IP 与入口 IP 不同或有多个入口地址时，分享链接和 Clash/Mihomo 配置写错地址的问题。
+- Argo 元数据同步改为逐条 JSON 读取，避免 VLESS 空密码字段造成错位；根据原始 WS 路径识别并重建已有的异常分享链接。
+- Alpine 的 cron 启动在 OpenRC 服务不可用时回退直接运行 `crond`，同时保留正常 OpenRC 环境下的开机启用设置。无 init 的容器仍需在容器启动流程中运行 cron，才能保证容器重启后持续守护。
